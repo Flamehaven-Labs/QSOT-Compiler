@@ -11,6 +11,11 @@ The **QSOT (Quantum State Over Time) Compiler** is the core engine of the **Flam
 
 ---
 
+## [L] Papers & Docs
+- Project page: `docs/Research Thesis/arxiv-cpc/index.html`
+- Paper A (CPC): `docs/Research Thesis/arxiv-cpc/QSOT_Compiler_Methodology_CPC.tex`
+- Paper B (PRA): `docs/Research Thesis/arxiv-cpc/Relativistic_Coherence_Sudden_Death_PRA.tex`
+
 ## [*] New in v1.2.3: "Causal Horizon" Module
 - **[UI] Prism UI (Voidwalker Theme):** A fully immersive, glassmorphism-based dashboard for professional quantum analysis.
 - **[~] Relativistic Entanglement:** Simulates quantum state decay under time dilation ($\beta = v/c$).
