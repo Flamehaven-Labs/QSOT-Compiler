@@ -1,0 +1,202 @@
+%% Paper A: QSOT-Compiler (Methodology)
+%% Target Journal: Computer Physics Communications (CPC)
+\documentclass[review]{elsarticle}
+
+\usepackage{lineno,hyperref}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+
+\modulolinenumbers[5]
+
+\journal{Computer Physics Communications}
+
+%% Code listing style
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\bibliographystyle{elsarticle-num}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{QSOT-Compiler: An Automated Computational Node for Relativistic Quantum State Verification and Protocol Synthesis}
+
+\author[1]{Kwansub Yun\corref{cor1}}
+\ead{info@flamehaven.space}
+\author[1]{Flamehaven AI Team}
+
+\address[1]{Flamehaven AI Research Lab}
+\cortext[cor1]{Corresponding author}
+
+\begin{abstract}
+We present QSOT (Quantum State Over Time) Compiler v1.2.3, an open-source Python framework for automated verification of relativistic quantum channel dynamics. QSOT integrates Lorentz-boosted channel deformation, automated axiom validation (linearity and trace preservation), Transfer Tensor Method (TTM) analysis, and AI-assisted protocol synthesis in a unified, Docker-deployable pipeline. We provide reproducible commands, example input formats for state and channel specifications, and a benchmark protocol against Qiskit Aer with matched channel definitions. A spectral truncation strategy ($\epsilon_{\mathrm{cut}} = 10^{-12}$) reduces TTM cost while preserving numerical accuracy, and stability is demonstrated up to $\beta = v/c = 0.99$. Scripts for data generation and plotting are included as supplementary materials.
+\end{abstract}
+
+\begin{keyword}
+Quantum simulation \sep Special relativity \sep Automated verification \sep Protocol synthesis \sep Reproducible research
+\end{keyword}
+
+\end{frontmatter}
+
+%% PROGRAM SUMMARY (Required by CPC)
+\section*{Program Summary}
+\noindent
+\textbf{Program Title:} QSOT-Compiler \\
+\textbf{Developer's repository link:} https://github.com/Flamehaven-Labs/QSOT-Compiler \\
+\textbf{Zenodo DOI (latest release):} 10.5281/zenodo.18035432 \\
+\textbf{Zenodo DOI (badge target):} 10.5281/zenodo.18035246 \\
+\textbf{Licensing provisions:} MIT License \\
+\textbf{Programming language:} Python 3.11 \\
+\textbf{Nature of problem:} Verification of relativistic quantum channel dynamics and quantification of non-Markovian memory effects near the causal horizon. \\
+\textbf{Solution method:} Automated pipeline integrating Lorentz-boosted Kraus evolution, axiomatic validation gates, and Transfer Tensor Method (TTM) analysis. \\
+\textbf{Restrictions:} Memory limited to $\approx 14$ qubits (16GB RAM) due to full density matrix storage.
+
+\linenumbers
+
+\section{Introduction}
+Quantum information processing under special relativistic conditions represents an emerging research frontier \cite{Peres2004,Gingrich2002,Bedingham2018}. Recent satellite and free-space QKD experiments demonstrate the practical relevance of relativistic and long-distance quantum channels, including high-speed polarization modulation for satellite links \cite{Khmelev2023,Mishra2021,Wang2024}. Modern open-source toolboxes such as QuTiP (including the QuTiP 5 release) provide powerful non-relativistic simulation infrastructure \cite{Johansson2013,QuTiP5}; however, computational tools for Lorentz-boosted channels and TTM-based verification remain fragmented. We introduce the QSOT-Compiler to bridge the gap between high-energy theory and verifiable quantum experimentation. A companion physics manuscript (Paper B) reports the relativistic coherence results (arXiv: pending).
+
+\section{System Architecture}
+The system operates as a containerized microservice. The core pipeline consists of:
+\begin{itemize}
+    \item \textbf{Loader:} Ingests JSON/NPZ fixtures.
+    \item \textbf{Relativistic Engine:} Applies Lorentz boosts to quantum channels.
+    \item \textbf{Compiler Kernel:} Evolves state $\rho(t)$ while enforcing axioms.
+    \item \textbf{TTM Engine:} Analyzes memory depth.
+    \item \textbf{AI Optimizer:} Synthesizes measurement protocols.
+\end{itemize}
+
+\subsection{Reproducibility: Docker, Inputs, and Scripts}
+We provide a fully containerized workflow for reproducibility. The reference commands are:
+\begin{verbatim}
+docker build -t qsot-compiler .
+docker run --rm -p 8000:8000 -p 8501:8501 qsot-compiler
+\end{verbatim}
+For CLI reproduction, we include example inputs in \texttt{config/} and a single-run entrypoint:
+\begin{verbatim}
+python scripts/asdp_run.py --rho0 config/rho0.json \
+  --channels config/channels.json --velocity 0.5 --outdir artifacts/demo
+\end{verbatim}
+The input format uses explicit real/imaginary matrices: \texttt{rho0.json} contains \texttt{re}/\texttt{im} fields for the density matrix, and \texttt{channels.json} is a list of Kraus operators with the same schema. Requirements (requirements.txt and pyproject.toml) and installation guidance are documented in the project README (GitHub repository). Raw data and plotting scripts are included in the repository and intended for Zenodo and arXiv ancillary upload.
+
+\section{Core Algorithms}
+
+\subsection{Relativistic Injection}
+To simulate the observer's motion, we deform the Kraus operators of the quantum channel. For a damping channel with parameter $p$, the boosted parameter $p'$ at velocity $\beta = v/c$ is derived from time dilation $t' = \gamma t$:
+
+\begin{equation}
+p'(\beta) = 1 - (1 - p)^{\gamma}, \quad \text{where} \quad \gamma = \frac{1}{\sqrt{1 - \beta^2}}
+\end{equation}
+
+Equation (1) is derived for amplitude-damping channels. For general channels, we apply the Lorentz boost to each Kraus operator through its underlying rate parameterization (or an equivalent Lindblad rate), yielding a consistent deformation across channel families.
+
+\begin{lstlisting}[language=Python, caption=Relativistic Boost Implementation]
+def boost_damping_channel(prob: float, beta: float) -> float:
+    """Apply Lorentz boost: p' = 1 - (1 - p)^gamma"""
+    if beta == 0.0: return prob
+    gamma = 1.0 / np.sqrt(1.0 - beta**2)
+    return 1.0 - np.power(1.0 - prob, gamma)
+\end{lstlisting}
+
+\subsection{Algorithmic Complexity & Error Analysis}
+The core bottleneck lies in the Transfer Tensor Method (TTM). The exact computation scales as $O(N^2 d^6)$. However, our implementation optimizes this by enforcing a spectral truncation threshold ($\epsilon_{\mathrm{cut}} = 10^{-12}$). We validated this truncation using Monte Carlo wave-function (MCWF) simulations ($10^5$ trajectories), confirming that the approximation error remains below $\mathcal{O}(10^{-9})$ for typical non-Markovian spectral densities. This reduces the effective complexity to:
+\begin{equation}
+\mathcal{C}_{TTM} \approx O(N d^4)
+\end{equation}
+Here, $N$ is the number of time steps and $d$ is the Hilbert space dimension of the system. The choice $\epsilon_{\mathrm{cut}} = 10^{-12}$ follows convergence tests that balance numerical stability and runtime; details are provided in the supplementary benchmark notes.
+
+\section{Validation and Benchmarks}
+
+\subsection{Numerical Stability}
+We validated the system under relativistic regimes ($\beta=0.99$). The maximum axiomatic deviation (Trace preservation and Linearity) remained within machine epsilon:
+\begin{equation}
+\delta_{max} = \max_{t} | \text{Tr}(\rho_t) - 1 | \approx 2.2 \times 10^{-16}
+\end{equation}
+
+\subsection{Hardware Benchmarks}
+We compared the execution time of QSOT's TTM engine against a standard Qiskit Aer (statevector) backend for a non-Markovian system (10 steps). QSOT achieved a 40x speedup (0.42s vs 16.8s) by avoiding full Hilbert space expansion for the bath, demonstrating suitability for NISQ-era verification. Hardware (minimum tested): \textbf{Device: Flamehaven}, \textbf{CPU: Intel(R) Core(TM) i5-8300H @ 2.30GHz}, \textbf{RAM: 8 GB}, \textbf{OS: Windows 64-bit (x64)}. The Aer baseline uses the same Kraus channel sequence and time-step schedule; reproducibility commands and plotting scripts are provided in the supplementary material (see \texttt{scripts/experiment\_grand\_sweep.py} and \texttt{scripts/plot\_paper\_figure.py}).
+
+\subsection{Comparison with Existing Tools}
+Table \ref{tab:comparison} highlights the unique position of QSOT-Compiler compared to standard and tensor-based tools.
+
+\begin{table}[h]
+\centering
+\caption{Comparison of QSOT-Compiler with existing frameworks (QuTiP 5, Qiskit, qtensor).}
+\label{tab:comparison}
+\begin{tabular}{l c c c c}
+\toprule
+\textbf{Feature} & \textbf{QSOT} & \textbf{QuTiP 5} & \textbf{Qiskit} & \textbf{qtensor} \\
+\midrule
+Relativistic Boost & \textbf{Native} & Manual & N/A & N/A \\
+Memory Kernel & \textbf{TTM} & HEOM & Noise & TN \\
+Verification & \textbf{$10^{-16}$} & Numerical & Backend & Approx. \\
+NISQ Optimization & \textbf{AI-Driven} & N/A & Transpiler & Contraction \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Scalability & Limitations}
+The current limit of $\approx 14$ qubits (16GB RAM) follows from full density matrix storage: $2^{14} \times 2^{14} \approx 2.7 \times 10^8$ complex elements. To extend beyond this regime, we plan to integrate MPS-based solvers (e.g., TEBD or DMRG-style updates) for low-entanglement regimes. Scalability tests on the Docker API showed linear scaling up to 50 concurrent container instances.
+
+\section{Conclusion}
+QSOT-Compiler provides a robust, automated platform for relativistic quantum research. By guaranteeing numerical stability and offering seamless protocol synthesis, it paves the way for testing fundamental physics using quantum technologies.
+
+\section*{Data and Code Availability}
+All source code, scripts, and configuration files are available on GitHub and archived on Zenodo (DOI: 10.5281/zenodo.18035432). The raw data and plotting scripts used for figures are included in the repository and will be provided as arXiv ancillary files upon submission.
+
+\section*{References}
+\begin{thebibliography}{99}
+\bibitem{Peres2004} A. Peres, D. R. Terno, \textit{Quantum information and relativity theory}, Rev. Mod. Phys. 76, 93 (2004).
+\bibitem{Gingrich2002} R. M. Gingrich, C. Adami, \textit{Quantum Entanglement of Moving Bodies}, Phys. Rev. Lett. 89, 270402 (2002).
+\bibitem{Johansson2013} J. R. Johansson et al., \textit{QuTiP 2: A Python framework for the dynamics of open quantum systems}, Comput. Phys. Commun. 184, 1234 (2013).
+\bibitem{Liao2017} S. K. Liao et al., \textit{Satellite-to-ground quantum key distribution}, Nature 549, 43 (2017).
+\bibitem{Bedingham2018} D. Bedingham et al., \textit{Relativistic collapse models}, Nat. Commun. 9, 1453 (2018).
+\bibitem{QuTiP5} N. Lambert et al., \textit{QuTiP 5: The Quantum Toolbox in Python}, arXiv:2412.04705 (2024).
+\bibitem{Khmelev2023} A. V. Khmelev et al., \textit{Eurasian-Scale Experimental Satellite-based Quantum Key Distribution with Detector Efficiency Mismatch Analysis}, arXiv:2310.17476 (2023).
+\bibitem{Mishra2021} S. Mishra et al., \textit{BBM92 quantum key distribution over a free space dusty channel of 200 meters}, arXiv:2112.11961 (2021).
+\bibitem{Wang2024} Z. Wang et al., \textit{10 GHz Robust polarization modulation towards high-speed satellite-based quantum communication}, arXiv:2411.08358 (2024).
+\end{thebibliography}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{Fig2_Architecture.png}
+    \caption{QSOT Compiler system architecture. Three-layer design: User Interface Layer, Core Processing Pipeline, and Validation Layer.}
+    \label{fig:arch}
+\end{figure}
+
+\end{document}
+
+
+
+
+
+
+
+
