@@ -43,6 +43,10 @@ The **QSOT (Quantum State Over Time) Compiler** is the core engine of the **Flam
    git clone https://github.com/Flamehaven-Labs/QSOT-Compiler.git
    cd qsot-compiler
    ```
+2. **Quick 3-second launch (local path):**
+   ```bat
+   d:\Sanctum\Flamehaven-Labs\QSOT_Compiler_V1\qsot_compiler\run_dashboard.bat
+   ```
 2. **Run the Launcher:**
    Double-click `run_dashboard.bat`
    
