@@ -1,4 +1,4 @@
-# QSOT Compiler: Time-Symmetric Quantum Engine
+# QSOT (Quantum State Over Time) Compiler
 
 ![Python](https://img.shields.io/badge/python-3.9%2B-blue?style=for-the-badge&logo=python) ![Torch](https://img.shields.io/badge/PyTorch-2.0%2B%20(Optional)-orange?style=for-the-badge&logo=pytorch) ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge) ![Drift-Free](https://img.shields.io/badge/Drift--Free-Certified-purple?style=for-the-badge)
 
