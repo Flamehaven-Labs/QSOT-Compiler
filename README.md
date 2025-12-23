@@ -18,10 +18,10 @@ The **QSOT (Quantum State Over Time) Compiler** is the core engine of the **Flam
 - Paper B (PRA): `docs/Research Thesis/arxiv-cpc/Relativistic_Coherence_Sudden_Death_PRA.tex`
 
 ## ✨ New in v1.2.3: "Causal Horizon" Module
-- **[UI] Prism UI (Voidwalker Theme):** A fully immersive, glassmorphism-based dashboard for professional quantum analysis.
-- **[~] Relativistic Entanglement:** Simulates quantum state decay under time dilation ($\beta = v/c$).
-- **[AI] Optimizer (Kirkwood-Dirac):** Uses PyTorch to minimize negative quasiprobabilities, proving non-classicality.
-- **[v] Artifact System:** Instant download of `LB_PROTOCOL.txt`, NPZ states, and high-res plots.
+- **🖥️ Prism UI (Voidwalker Theme):** A fully immersive, glassmorphism-based dashboard for professional quantum analysis.
+- **🕒 Relativistic Entanglement:** Simulates quantum state decay under time dilation ($\beta = v/c$).
+- **🤖 Optimizer (Kirkwood-Dirac):** Uses PyTorch to minimize negative quasiprobabilities, proving non-classicality.
+- **📦 Artifact System:** Instant download of `LB_PROTOCOL.txt`, NPZ states, and high-res plots.
 
 ---
 
