@@ -12,12 +12,12 @@ The **QSOT (Quantum State Over Time) Compiler** is the core engine of the **Flam
 
 ---
 
-## [L] Papers & Docs
+## [📚] Papers & Docs
 - Project page: `docs/Research Thesis/arxiv-cpc/index.html`
 - Paper A (CPC): `docs/Research Thesis/arxiv-cpc/QSOT_Compiler_Methodology_CPC.tex`
 - Paper B (PRA): `docs/Research Thesis/arxiv-cpc/Relativistic_Coherence_Sudden_Death_PRA.tex`
 
-## [*] New in v1.2.3: "Causal Horizon" Module
+## [✨] New in v1.2.3: "Causal Horizon" Module
 - **[UI] Prism UI (Voidwalker Theme):** A fully immersive, glassmorphism-based dashboard for professional quantum analysis.
 - **[~] Relativistic Entanglement:** Simulates quantum state decay under time dilation ($\beta = v/c$).
 - **[AI] Optimizer (Kirkwood-Dirac):** Uses PyTorch to minimize negative quasiprobabilities, proving non-classicality.
@@ -25,7 +25,7 @@ The **QSOT (Quantum State Over Time) Compiler** is the core engine of the **Flam
 
 ---
 
-## [>] Quick Start
+## [🚀] Quick Start
 
 ### Prerequisites
 - **Python 3.9 or higher**
@@ -87,14 +87,14 @@ artifacts/demo/
 
 ---
 
-## [B] Known Limitations
+## [⚠️] Known Limitations
 - PyTorch GPU acceleration requires CUDA 11.7+ (Windows/Linux only).
 - Memory kernel computation scales O(n^3) with channel count.
 - Relativistic corrections assume inertial frames (no GR effects).
 
 ---
 
-## [#] Architecture
+## [🏗️] Architecture
 
 The project follows a **Source Layout** for robustness and clarity.
 
@@ -140,7 +140,7 @@ The **Prism UI** provides an intuitive interface for quantum state analysis:
 
 ---
 
-## [T] Testing & Quality Assurance
+## [🧪] Testing & Quality Assurance
 
 This project maintains **S-Grade Quality** with strict automated testing.
 
@@ -162,7 +162,7 @@ mypy src/qsot/
 
 ---
 
-## [?] Troubleshooting
+## [🛠️] Troubleshooting
 
 **Issue:** `ModuleNotFoundError: No module named 'qsot'`  
 **Solution:** Ensure `PYTHONPATH` includes the `src/` directory:
@@ -186,7 +186,7 @@ pip install torch --index-url https://download.pytorch.org/whl/cpu
 
 ---
 
-## [*] Citation & References
+## [🔖] Citation & References
 
 If you use QSOT Compiler in your research, please cite:
 
@@ -211,12 +211,12 @@ Zenodo DOI (badge target): 10.5281/zenodo.18035246
 
 ---
 
-## [L] License
+## [🧾] License
 MIT License - See [LICENSE](./LICENSE) for full details.
 
 ---
 
-## [+] Contributing
+## [🤝] Contributing
 We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ---
