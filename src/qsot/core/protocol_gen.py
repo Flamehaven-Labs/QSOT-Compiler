@@ -1,24 +1,27 @@
 #!/usr/bin/env python3
-# protocol_gen.py — Generate Human-Readable Experimental Protocol
+# protocol_gen.py - Generate Human-Readable Experimental Protocol
 # Converts optimized angles into lab instructions (e.g., Waveplate settings).
 
 import argparse
 import json
-import numpy as np
 from pathlib import Path
+
+import numpy as np
+
 
 def rad_to_deg(rad):
     return (rad % (2 * np.pi)) * 180 / np.pi
 
+
 def generate_protocol(opt_json_path, out_path):
     data = json.loads(Path(opt_json_path).read_text())
-    
+
     # [Robustness Fix] Handle missing angles (e.g. if PyTorch missing)
     if "angles" not in data:
-        print("⚠️ Optimization skipped or failed. Using default basis.")
+        print("[!] Optimization skipped or failed. Using default basis.")
         angles = {
             "basis_a": {"theta": 0.0, "phi": 0.0},
-            "basis_b": {"theta": np.pi/2, "phi": 0.0}
+            "basis_b": {"theta": np.pi / 2, "phi": 0.0},
         }
         optimized_value = data.get("optimized_value", 0.0)
         is_negative = False
@@ -26,7 +29,7 @@ def generate_protocol(opt_json_path, out_path):
         angles = data["angles"]
         optimized_value = data.get("optimized_value", 0.0)
         is_negative = data.get("is_negative", False)
-    
+
     # Convert Bloch angles to Half-Wave Plate (HWP) and Quarter-Wave Plate (QWP) angles
     # Simplified mapping for polarization optics
     def get_optics_settings(label, theta, phi):
@@ -34,13 +37,26 @@ def generate_protocol(opt_json_path, out_path):
         deg_phi = rad_to_deg(phi)
         return f"""
     [Station {label}] Measurement Setup:
-      - Target Bloch State: θ={deg_theta:.1f}°, φ={deg_phi:.1f}°
+      - Target Bloch State: theta={deg_theta:.1f} deg, phi={deg_phi:.1f} deg
       - Hardware Config:
-          1. QWP (Quarter-Wave Plate) axis at: {deg_phi/2:.1f}°
-          2. HWP (Half-Wave Plate) axis at:    {deg_theta/4 + deg_phi/4:.1f}°
+          1. QWP (Quarter-Wave Plate) axis at: {deg_phi / 2:.1f} deg
+          2. HWP (Half-Wave Plate) axis at:    {deg_theta / 4 + deg_phi / 4:.1f} deg
           3. Linear Polarizer (Transmission):  Vertical
     """
 
+    status_text = (
+        "NON-CLASSICAL (Quantum Effect Detected)" if is_negative else "CLASSICAL BOUND"
+    )
+    setup_a = get_optics_settings(
+        "A (Time t_initial)",
+        angles["basis_a"]["theta"],
+        angles["basis_a"]["phi"],
+    )
+    setup_b = get_optics_settings(
+        "B (Time t_final)",
+        angles["basis_b"]["theta"],
+        angles["basis_b"]["phi"],
+    )
     protocol_text = f"""
 ============================================================
    FLAMEHAVEN TOE :: EXPERIMENTAL PROTOCOL (v0.3.0)
@@ -50,11 +66,11 @@ def generate_protocol(opt_json_path, out_path):
 1. OBJECTIVE
    Maximize Kirkwood-Dirac Negativity (Non-classicality Witness)
    Predicted Value: {optimized_value:.6f}
-   Status: {"NON-CLASSICAL (Quantum Effect Detected)" if is_negative else "CLASSICAL BOUND"}
+   Status: {status_text}
 
 2. SETUP INSTRUCTIONS
-{get_optics_settings("A (Time t_initial)", angles["basis_a"]["theta"], angles["basis_a"]["phi"])}
-{get_optics_settings("B (Time t_final)", angles["basis_b"]["theta"], angles["basis_b"]["phi"])}
+{setup_a}
+{setup_b}
 
 3. DATA ACQUISITION
    - Collect coincidence counts for 60 seconds per setting.
@@ -65,15 +81,16 @@ def generate_protocol(opt_json_path, out_path):
     Signed: Flamehaven FPE Autosigner
 ============================================================
 """
-    
+
     Path(out_path).write_text(protocol_text, encoding="utf-8")
-    print(f"📄 Protocol generated: {out_path}")
+    print(f"[L] Protocol generated: {out_path}")
     print(protocol_text)
+
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--opt-result", required=True, help="optimization_result.json")
     ap.add_argument("--out", default="LAB_PROTOCOL.txt")
     args = ap.parse_args()
-    
+
     generate_protocol(args.opt_result, args.out)

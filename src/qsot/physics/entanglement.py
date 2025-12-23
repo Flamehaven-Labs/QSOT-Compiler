@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-# entanglement.py — Measure Relativistic Quantum Correlations (Entanglement/Coherence)
+# entanglement.py - Measure Relativistic Quantum Correlations (Entanglement/Coherence)
 import numpy as np
+
 
 def partial_transpose(rho, dim_a, dim_b):
     """
@@ -12,23 +13,25 @@ def partial_transpose(rho, dim_a, dim_b):
     rho_pt = rho_reshaped.transpose(0, 3, 2, 1).reshape(dim_a * dim_b, dim_a * dim_b)
     return rho_pt
 
+
 def logarithmic_negativity(rho):
     """
     Compute Logarithmic Negativity: E_N(rho) = log2 || rho^TB ||_1
     Used for Multipartite systems (dim >= 4).
     """
     dim_total = rho.shape[0]
-    dim_a = 2 
+    dim_a = 2
     dim_b = dim_total // dim_a
-    
+
     rho_pt = partial_transpose(rho, dim_a, dim_b)
     eigenvalues = np.linalg.eigvalsh(rho_pt)
-    
+
     # Trace Norm = sum(|eigenvalues|)
     trace_norm = np.sum(np.abs(eigenvalues))
-    
+
     # Log Negativity (0 if separable, >0 if entangled)
     return float(np.log2(trace_norm))
+
 
 def l1_norm_coherence(rho):
     """
@@ -38,6 +41,7 @@ def l1_norm_coherence(rho):
     off_diag_sum = np.sum(np.abs(rho)) - np.sum(np.abs(np.diag(rho)))
     return float(off_diag_sum)
 
+
 def compute_correlation_profile(rhos):
     """
     Analyze the trajectory of quantum correlations.
@@ -46,7 +50,7 @@ def compute_correlation_profile(rhos):
     """
     profile = []
     metric_name = "Unknown"
-    
+
     if not rhos:
         return {"profile": [], "metric": metric_name}
 
@@ -58,15 +62,15 @@ def compute_correlation_profile(rhos):
     else:
         metric_name = "L1 Coherence (Superposition)"
         calc_fn = l1_norm_coherence
-        
+
     for rho in rhos:
         val = calc_fn(rho)
         profile.append(val)
-        
+
     return {
         "profile": profile,
         "metric": metric_name,
         "avg_value": float(np.mean(profile)),
         "max_value": float(np.max(profile)),
-        "final_value": float(profile[-1])
+        "final_value": float(profile[-1]),
     }
