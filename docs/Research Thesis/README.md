@@ -6,8 +6,8 @@ This directory `docs/Research Thesis` contains the finalized academic artifacts 
 
 ### 1. `arxiv-cpc/` (Submission Package)
 The complete LaTeX source package for arXiv/Journal submission.
-- **`Paper_A_Methodology_CPC.tex`**: Main manuscript for CPC. Describes the software architecture, algorithms, and TTM complexity.
-- **`Paper_B_Physics.tex`**: Main manuscript for PRA. Reports the physical discovery of "Relativistic Coherence Sudden Death".
+- **`QSOT_Compiler_Methodology_CPC.tex`**: Main manuscript for CPC. Describes the software architecture, algorithms, and TTM complexity.
+- **`Relativistic_Coherence_Sudden_Death_PRA.tex`**: Main manuscript for PRA. Reports the physical discovery of "Relativistic Coherence Sudden Death".
 - **`Fig1_Relativistic_decay.png`**: Key result figure for Paper B.
 - **`Fig2_Architecture.png`**: System diagram for Paper A.
 
@@ -17,8 +17,8 @@ A static HTML project page for showcasing the work.
 - **`static/`**: Contains CSS/JS assets.
 
 ### 3. `*.md` Drafts
-- `Paper_A_Methodology_CPC.md`: Markdown draft of Paper A.
-- `Paper_B_Physics_PRA.md`: Markdown draft of Paper B.
+- `QSOT_Compiler_Methodology_CPC.md`: Markdown draft of Paper A.
+- `Relativistic_Coherence_Sudden_Death_PRA.md`: Markdown draft of Paper B.
 - `Publication_Roadmap.md`: Strategic plan.
 
 ---
@@ -30,8 +30,8 @@ A static HTML project page for showcasing the work.
     - Upload the zip file. The TeX files are pre-configured with `elsarticle` and `revtex4-2` classes.
 
 2.  **For Journals:**
-    - **CPC:** Submit `Paper_A_Methodology_CPC.tex` + `Fig2_Architecture.png`.
-    - **PRA:** Submit `Paper_B_Physics.tex` + `Fig1_Relativistic_decay.png`.
+    - **CPC:** Submit `QSOT_Compiler_Methodology_CPC.tex` + `Fig2_Architecture.png`.
+    - **PRA:** Submit `Relativistic_Coherence_Sudden_Death_PRA.tex` + `Fig1_Relativistic_decay.png`.
 
 ## [#] DOI
 - Zenodo DOI (latest release): 10.5281/zenodo.18035432
